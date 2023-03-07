@@ -34,6 +34,7 @@ function App() {
   const [notes, setNotes] = useState("floor");
   const [status, setStatus] = useState("pending");
   const [showSnack, setShowSnack] = useState(false);
+  const [showForm, setShowForm] = useState(true);
 
   useEffect(() => {
     if (!!datetime) {
@@ -68,6 +69,7 @@ function App() {
       .then((res) => {
         if (res.data.status === "OK") {
           setShowSnack(true);
+          setShowForm(false);
         }
       })
       .catch((e) => {
@@ -81,7 +83,7 @@ function App() {
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
         </header>
-        {!showSnack && (
+        {showForm && (
           <>
             <Box
               sx={{
