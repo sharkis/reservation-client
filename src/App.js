@@ -81,79 +81,86 @@ function App() {
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
         </header>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <DateTimePicker disablePast onChange={(v) => setDateTime(v.unix())} />
-          <Select value={size} onChange={(e) => setSize(e.target.value)}>
-            {_.range(1, 20).map((v) => (
-              <MenuItem value={v}>{`${v} people`}</MenuItem>
-            ))}
-          </Select>
-          <Select value={area} onChange={(e) => setArea(e.target.value)}>
-            <MenuItem value="floor">Dining Floor</MenuItem>
-            <MenuItem value="patio">Patio</MenuItem>
-            <MenuItem value="bar">Bar</MenuItem>
-          </Select>
-          {status === "pending" && <Pending />}
-          {status === "fail" && <Cancel sx={{ color: "red" }} />}
-          {status === "success" && <CheckCircle sx={{ color: "green" }} />}
-        </Box>
-        {status === "success" && (
+        {!showSnack && (
           <>
-            <Box py={5}>
-              <Typography pb={5}>
-                We have a table available! Enter your information below:
-              </Typography>
-              <Box>
-                <TextField
-                  required
-                  label="Name"
-                  onChange={(e) => setCustName(e.target.value)}
-                  value={custName}
-                />
-                <TextField
-                  required
-                  label="E-mail"
-                  onChange={(e) => setCustEmail(e.target.value)}
-                  value={custEmail}
-                />
-                <TextField
-                  required
-                  label="Phone"
-                  onChange={(e) => setCustPhone(e.target.value)}
-                  value={custPhone}
-                />
-              </Box>
-              <Box pt={2}>
-                <TextField
-                  label="Notes"
-                  onChange={(e) => setNotes(e.target.value)}
-                />
-                <Select
-                  value={occasion}
-                  onChange={(e) => setOccasion(e.target.value)}
-                  displayEmpty
-                >
-                  <MenuItem value="">Special Occasion?</MenuItem>
-                  <MenuItem value="birthday">Birthday</MenuItem>
-                  <MenuItem value="anniversary">Anniversary</MenuItem>
-                  <MenuItem value="date">Date Night</MenuItem>
-                  <MenuItem value="business">Business Dinner</MenuItem>
-                  <MenuItem value="celebration">Celebration</MenuItem>
-                </Select>
-              </Box>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <DateTimePicker
+                disablePast
+                onChange={(v) => setDateTime(v.unix())}
+              />
+              <Select value={size} onChange={(e) => setSize(e.target.value)}>
+                {_.range(1, 20).map((v) => (
+                  <MenuItem value={v}>{`${v} people`}</MenuItem>
+                ))}
+              </Select>
+              <Select value={area} onChange={(e) => setArea(e.target.value)}>
+                <MenuItem value="floor">Dining Floor</MenuItem>
+                <MenuItem value="patio">Patio</MenuItem>
+                <MenuItem value="bar">Bar</MenuItem>
+              </Select>
+              {status === "pending" && <Pending />}
+              {status === "fail" && <Cancel sx={{ color: "red" }} />}
+              {status === "success" && <CheckCircle sx={{ color: "green" }} />}
             </Box>
-            <Box py={5}>
-              <Button variant="contained" onClick={createReservation}>
-                Create Reservation
-              </Button>
-            </Box>
+            {status === "success" && (
+              <>
+                <Box py={5}>
+                  <Typography pb={5}>
+                    We have a table available! Enter your information below:
+                  </Typography>
+                  <Box>
+                    <TextField
+                      required
+                      label="Name"
+                      onChange={(e) => setCustName(e.target.value)}
+                      value={custName}
+                    />
+                    <TextField
+                      required
+                      label="E-mail"
+                      onChange={(e) => setCustEmail(e.target.value)}
+                      value={custEmail}
+                    />
+                    <TextField
+                      required
+                      label="Phone"
+                      onChange={(e) => setCustPhone(e.target.value)}
+                      value={custPhone}
+                    />
+                  </Box>
+                  <Box pt={2}>
+                    <TextField
+                      label="Notes"
+                      onChange={(e) => setNotes(e.target.value)}
+                    />
+                    <Select
+                      value={occasion}
+                      onChange={(e) => setOccasion(e.target.value)}
+                      displayEmpty
+                    >
+                      <MenuItem value="">Special Occasion?</MenuItem>
+                      <MenuItem value="birthday">Birthday</MenuItem>
+                      <MenuItem value="anniversary">Anniversary</MenuItem>
+                      <MenuItem value="date">Date Night</MenuItem>
+                      <MenuItem value="business">Business Dinner</MenuItem>
+                      <MenuItem value="celebration">Celebration</MenuItem>
+                    </Select>
+                  </Box>
+                </Box>
+                <Box py={5}>
+                  <Button variant="contained" onClick={createReservation}>
+                    Create Reservation
+                  </Button>
+                </Box>
+              </>
+            )}
           </>
         )}
         <Snackbar
