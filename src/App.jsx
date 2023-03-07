@@ -1,51 +1,44 @@
-import "./App.css";
-import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import React, { useEffect, useState } from 'react';
+
+import { Cancel, CheckCircle, Pending } from '@mui/icons-material';
 import {
-  Select,
-  MenuItem,
-  TextField,
+  Alert, Button, MenuItem, Select, Snackbar, TextField,
   Typography,
-  Button,
-  Snackbar,
-  Alert,
-} from "@mui/material";
-import _ from "lodash";
-import { default as axios } from "axios";
+} from '@mui/material';
+import { Box } from '@mui/system';
+import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import axios from 'axios';
+import _ from 'lodash';
+import './App.css';
+import logo from './assets/lightlogo.png';
 
-import logo from "./assets/lightlogo.png";
-import { useEffect, useState } from "react";
-import { Box } from "@mui/system";
-import { Pending, Cancel, CheckCircle } from "@mui/icons-material";
-
-const API_URL =
-  "https://zmtt6pwpug.execute-api.us-east-1.amazonaws.com/checkReservation";
-const BOOK_URL =
-  "https://zmtt6pwpug.execute-api.us-east-1.amazonaws.com/reservation";
+const API_URL = 'https://zmtt6pwpug.execute-api.us-east-1.amazonaws.com/checkReservation';
+const BOOK_URL = 'https://zmtt6pwpug.execute-api.us-east-1.amazonaws.com/reservation';
 
 function App() {
   const [size, setSize] = useState(2);
-  const [area, setArea] = useState("floor");
-  const [occasion, setOccasion] = useState("");
-  const [custName, setCustName] = useState("");
-  const [custPhone, setCustPhone] = useState("");
-  const [custEmail, setCustEmail] = useState("");
+  const [area, setArea] = useState('floor');
+  const [occasion, setOccasion] = useState('');
+  const [custName, setCustName] = useState('');
+  const [custPhone, setCustPhone] = useState('');
+  const [custEmail, setCustEmail] = useState('');
   const [datetime, setDateTime] = useState();
-  const [notes, setNotes] = useState("floor");
-  const [status, setStatus] = useState("pending");
+  const [notes, setNotes] = useState('floor');
+  const [status, setStatus] = useState('pending');
   const [showSnack, setShowSnack] = useState(false);
   const [showForm, setShowForm] = useState(true);
 
   useEffect(() => {
-    if (!!datetime) {
+    if (datetime) {
       axios
         .post(API_URL, { timestamp: datetime })
         .then((res) => {
           if (res.data.available === true) {
-            setStatus("success");
+            setStatus('success');
           }
           if (res.data.available === false) {
-            setStatus("fail");
+            setStatus('fail');
           }
         })
         .catch((e) => {
@@ -67,7 +60,7 @@ function App() {
         custPhone,
       })
       .then((res) => {
-        if (res.data.status === "OK") {
+        if (res.data.status === 'OK') {
           setShowSnack(true);
           setShowForm(false);
         }
@@ -87,10 +80,10 @@ function App() {
           <>
             <Box
               sx={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "center",
-                alignItems: "center",
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
               }}
             >
               <DateTimePicker
@@ -107,11 +100,11 @@ function App() {
                 <MenuItem value="patio">Patio</MenuItem>
                 <MenuItem value="bar">Bar</MenuItem>
               </Select>
-              {status === "pending" && <Pending />}
-              {status === "fail" && <Cancel sx={{ color: "red" }} />}
-              {status === "success" && <CheckCircle sx={{ color: "green" }} />}
+              {status === 'pending' && <Pending />}
+              {status === 'fail' && <Cancel sx={{ color: 'red' }} />}
+              {status === 'success' && <CheckCircle sx={{ color: 'green' }} />}
             </Box>
-            {status === "success" && (
+            {status === 'success' && (
               <>
                 <Box py={5}>
                   <Typography pb={5}>
