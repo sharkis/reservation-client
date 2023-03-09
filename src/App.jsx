@@ -1,8 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 
 import { Cancel, CheckCircle, Pending } from '@mui/icons-material';
 import {
-  Alert, Button, MenuItem, Select, Snackbar, TextField,
+  Alert,
+  Button,
+  MenuItem,
+  Select,
+  Snackbar,
+  TextField,
   Typography,
 } from '@mui/material';
 import { Box } from '@mui/system';
@@ -16,23 +21,86 @@ import logo from './assets/lightlogo.png';
 const API_URL = 'https://zmtt6pwpug.execute-api.us-east-1.amazonaws.com/checkReservation';
 const BOOK_URL = 'https://zmtt6pwpug.execute-api.us-east-1.amazonaws.com/reservation';
 
+const reducer = (state, action) => {
+  const { type, payload } = action;
+  switch (type) {
+    case 'setSize':
+      return {
+        ...state,
+        size: payload,
+      };
+    case 'setArea':
+      return {
+        ...state,
+        area: payload,
+      };
+    case 'setOccasion':
+      return {
+        ...state,
+        occasion: payload,
+      };
+    case 'setNotes':
+      return {
+        ...state,
+        notes: payload,
+      };
+    case 'setDateTime':
+      return {
+        ...state,
+        datetime: payload,
+      };
+    case 'setCustName':
+      return {
+        ...state,
+        customer: {
+          ...state.customer,
+          name: payload,
+        },
+      };
+    case 'setCustPhone':
+      return {
+        ...state,
+        customer: {
+          ...state.customer,
+          phone: payload,
+        },
+      };
+    case 'setCustEmail':
+      return {
+        ...state,
+        customer: {
+          ...state.customer,
+          email: payload,
+        },
+      };
+    default:
+  }
+  return state;
+};
+
+const initialState = {
+  size: 2,
+  area: 'floor',
+  occasion: '',
+  datetime: 0,
+  notes: '',
+  customer: {
+    name: '',
+    email: '',
+    phone: '',
+  },
+};
+
 function App() {
-  const [size, setSize] = useState(2);
-  const [area, setArea] = useState('floor');
-  const [occasion, setOccasion] = useState('');
-  const [custName, setCustName] = useState('');
-  const [custPhone, setCustPhone] = useState('');
-  const [custEmail, setCustEmail] = useState('');
-  const [datetime, setDateTime] = useState();
-  const [notes, setNotes] = useState('floor');
   const [status, setStatus] = useState('pending');
   const [showSnack, setShowSnack] = useState(false);
   const [showForm, setShowForm] = useState(true);
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
-    if (datetime) {
+    if (state.datetime) {
       axios
-        .post(API_URL, { timestamp: datetime })
+        .post(API_URL, { timestamp: state.datetime })
         .then((res) => {
           if (res.data.available === true) {
             setStatus('success');
@@ -40,33 +108,18 @@ function App() {
           if (res.data.available === false) {
             setStatus('fail');
           }
-        })
-        .catch((e) => {
-          console.error(e);
         });
     }
-  }, [size, area, datetime]);
+  }, [state.datetime, state.area, state.size]);
 
   const createReservation = () => {
     axios
-      .post(BOOK_URL, {
-        timestamp: datetime,
-        area,
-        size,
-        notes,
-        occasion,
-        custName,
-        custEmail,
-        custPhone,
-      })
+      .post(BOOK_URL, state)
       .then((res) => {
         if (res.data.status === 'OK') {
           setShowSnack(true);
           setShowForm(false);
         }
-      })
-      .catch((e) => {
-        console.error(e);
       });
   };
 
@@ -88,21 +141,29 @@ function App() {
             >
               <DateTimePicker
                 disablePast
-                onChange={(v) => setDateTime(v.unix())}
+                onChange={(v) => dispatch({ type: 'setDateTime', payload: v.unix() })}
               />
-              <Select value={size} onChange={(e) => setSize(e.target.value)}>
+              <Select
+                value={state.size}
+                onChange={(e) => dispatch({ type: 'setSize', payload: e.target.value })}
+              >
                 {_.range(1, 20).map((v) => (
                   <MenuItem value={v}>{`${v} people`}</MenuItem>
                 ))}
               </Select>
-              <Select value={area} onChange={(e) => setArea(e.target.value)}>
+              <Select
+                value={state.area}
+                onChange={(e) => dispatch({ type: 'setArea', payload: e.target.value })}
+              >
                 <MenuItem value="floor">Dining Floor</MenuItem>
                 <MenuItem value="patio">Patio</MenuItem>
                 <MenuItem value="bar">Bar</MenuItem>
               </Select>
               {status === 'pending' && <Pending />}
               {status === 'fail' && <Cancel sx={{ color: 'red' }} />}
-              {status === 'success' && <CheckCircle sx={{ color: 'green' }} />}
+              {status === 'success' && (
+                <CheckCircle sx={{ color: 'green' }} />
+              )}
             </Box>
             {status === 'success' && (
               <>
@@ -114,30 +175,31 @@ function App() {
                     <TextField
                       required
                       label="Name"
-                      onChange={(e) => setCustName(e.target.value)}
-                      value={custName}
+                      onChange={(e) => dispatch({ type: 'setCustName', payload: e.target.value })}
+                      value={state.custName}
                     />
                     <TextField
                       required
                       label="E-mail"
-                      onChange={(e) => setCustEmail(e.target.value)}
-                      value={custEmail}
+                      onChange={(e) => dispatch({ type: 'setCustEmail', payload: e.target.value })}
+                      value={state.custEmail}
                     />
                     <TextField
                       required
                       label="Phone"
-                      onChange={(e) => setCustPhone(e.target.value)}
-                      value={custPhone}
+                      onChange={(e) => dispatch({ type: 'setCustPhone', payload: e.target.value })}
+                      value={state.custPhone}
                     />
                   </Box>
                   <Box pt={2}>
                     <TextField
+                      value={state.notes}
                       label="Notes"
-                      onChange={(e) => setNotes(e.target.value)}
+                      onChange={(e) => dispatch({ type: 'setNotes', payload: e.target.value })}
                     />
                     <Select
-                      value={occasion}
-                      onChange={(e) => setOccasion(e.target.value)}
+                      value={state.occasion}
+                      onChange={(e) => dispatch({ type: 'setOccasion', payload: e.target.value })}
                       displayEmpty
                     >
                       <MenuItem value="">Special Occasion?</MenuItem>
