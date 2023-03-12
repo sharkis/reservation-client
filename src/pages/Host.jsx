@@ -8,13 +8,14 @@ import { Refresh } from '@mui/icons-material';
 
 const API_URL = 'https://1ndmxvwn7l.execute-api.us-east-1.amazonaws.com/reservation';
 
-const work = new Worker(new URL('/workers/interval.js', 'http://localhost:3000'));
+const work = new Worker(new URL('/workers/interval.js', process.env.PUBLIC_URL || 'http://localhost:3000'));
 
 function Host() {
   const [reservations, setReservations] = useState([]);
   const [qdate] = useState(new Date().getTime() / 1000);
   const [time, setTime] = useState(Date.now());
   const intWorker = useRef(work);
+  const today = useRef(dayjs().format('MM-DD-YYYY'));
 
   const fetchReservations = () => {
     axios.get(API_URL, { params: { datetime: qdate } })
@@ -47,7 +48,7 @@ function Host() {
 
   return (
     <>
-      <Typography variant="h3">Reservations</Typography>
+      <Typography variant="h3">{`Reservations ${today.current}`}</Typography>
       <MaterialTable
         data={currentReservations}
         columns={columns}
