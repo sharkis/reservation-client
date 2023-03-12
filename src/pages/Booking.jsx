@@ -1,6 +1,7 @@
-import React, { useState, useReducer, useEffect } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 
-import { Cancel, CheckCircle, Pending } from '@mui/icons-material';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Cancel, CheckCircle, Sync } from '@mui/icons-material';
 import {
   Alert,
   Button,
@@ -13,9 +14,25 @@ import {
 import { Box } from '@mui/system';
 import { DateTimePicker } from '@mui/x-date-pickers';
 import axios from 'axios';
+import dayjs from 'dayjs';
 import _ from 'lodash';
-import logo from '../assets/lightlogo.png';
+import { Controller, useForm, useWatch } from 'react-hook-form';
+import * as yup from 'yup';
 import '../App.css';
+import logo from '../assets/lightlogo.png';
+
+const schema = yup.object({
+  size: yup.number().positive().integer().required(),
+  area: yup.string(),
+  occasion: yup.string(),
+  datetime: yup.date(),
+  notes: yup.string(),
+  customer: yup.object({
+    name: yup.string().required(),
+    email: yup.string().required(),
+    phone: yup.string().required(),
+  }),
+}).required();
 
 const reducer = (state, action) => {
   const { type, payload } = action;
@@ -95,11 +112,18 @@ function Booking() {
   const [showSnack, setShowSnack] = useState(false);
   const [showForm, setShowForm] = useState(true);
   const [state, dispatch] = useReducer(reducer, initialState);
+  const { handleSubmit, control } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: { size: 2, area: 'floor', datetime: dayjs() },
+  });
+
+  const timeVals = useWatch({ control, name: ['size', 'area', 'datetime'] });
 
   useEffect(() => {
-    if (state.datetime) {
+    if (!timeVals.some((t) => t === null)) {
+      setStatus('pending');
       axios
-        .post(API_URL, { timestamp: state.datetime })
+        .post(API_URL, { size: timeVals[0], area: timeVals[1], timestamp: timeVals[2].unix() })
         .then((res) => {
           if (res.data.available === true) {
             setStatus('success');
@@ -109,7 +133,7 @@ function Booking() {
           }
         });
     }
-  }, [state.datetime, state.area, state.size]);
+  }, [timeVals]);
 
   const createReservation = () => {
     axios
@@ -128,7 +152,7 @@ function Booking() {
         <img src={logo} className="App-logo" alt="logo" />
       </header>
       {showForm && (
-        <>
+        <form onSubmit={() => handleSubmit(createReservation)}>
           <Box
             sx={{
               display: 'flex',
@@ -137,30 +161,55 @@ function Booking() {
               alignItems: 'center',
             }}
           >
-            <DateTimePicker
-              disablePast
-              onChange={(v) => dispatch({ type: 'setDateTime', payload: v.unix() })}
+            <Controller
+              name="datetime"
+              control={control}
+              render={({ field }) => (
+                <DateTimePicker
+                  disablePast
+                  onChange={field.onChange}
+                  name={field.name}
+                  value={dayjs(field.value)}
+                />
+              )}
             />
-            <Select
-              value={state.size}
-              onChange={(e) => dispatch({ type: 'setSize', payload: e.target.value })}
-            >
-              {_.range(1, 20).map((v) => (
-                <MenuItem value={v}>{`${v} people`}</MenuItem>
-              ))}
-            </Select>
-            <Select
-              value={state.area}
-              onChange={(e) => dispatch({ type: 'setArea', payload: e.target.value })}
-            >
-              <MenuItem value="floor">Dining Floor</MenuItem>
-              <MenuItem value="patio">Patio</MenuItem>
-              <MenuItem value="bar">Bar</MenuItem>
-            </Select>
-            {status === 'pending' && <Pending />}
+            <Controller
+              name="size"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  value={field.value}
+                  name={field.name}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                >
+                  {_.range(1, 20).map((v) => (
+                    <MenuItem value={v}>{`${v} people`}</MenuItem>
+                  ))}
+
+                </Select>
+              )}
+            />
+            <Controller
+              name="area"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  value={field.value}
+                  name={field.name}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                >
+                  <MenuItem value="floor">Dining Floor</MenuItem>
+                  <MenuItem value="patio">Patio</MenuItem>
+                  <MenuItem value="bar">Bar</MenuItem>
+                </Select>
+              )}
+            />
+            {status === 'pending' && <Sync className="spinner" />}
             {status === 'fail' && <Cancel sx={{ color: 'red' }} />}
             {status === 'success' && (
-            <CheckCircle sx={{ color: 'green' }} />
+              <CheckCircle sx={{ color: 'green' }} />
             )}
           </Box>
           {status === 'success' && (
@@ -216,7 +265,7 @@ function Booking() {
             </Box>
           </>
           )}
-        </>
+        </form>
       )}
       {!showForm && (
         <Box
