@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Cancel, CheckCircle, Sync } from '@mui/icons-material';
@@ -34,76 +34,6 @@ const schema = yup.object({
   }),
 }).required();
 
-const reducer = (state, action) => {
-  const { type, payload } = action;
-  switch (type) {
-    case 'setSize':
-      return {
-        ...state,
-        size: payload,
-      };
-    case 'setArea':
-      return {
-        ...state,
-        area: payload,
-      };
-    case 'setOccasion':
-      return {
-        ...state,
-        occasion: payload,
-      };
-    case 'setNotes':
-      return {
-        ...state,
-        notes: payload,
-      };
-    case 'setDateTime':
-      return {
-        ...state,
-        datetime: payload,
-      };
-    case 'setCustName':
-      return {
-        ...state,
-        customer: {
-          ...state.customer,
-          name: payload,
-        },
-      };
-    case 'setCustPhone':
-      return {
-        ...state,
-        customer: {
-          ...state.customer,
-          phone: payload,
-        },
-      };
-    case 'setCustEmail':
-      return {
-        ...state,
-        customer: {
-          ...state.customer,
-          email: payload,
-        },
-      };
-    default:
-  }
-  return state;
-};
-
-const initialState = {
-  size: 2,
-  area: 'floor',
-  occasion: '',
-  datetime: 0,
-  notes: '',
-  customer: {
-    name: '',
-    email: '',
-    phone: '',
-  },
-};
-
 const API_URL = 'https://1ndmxvwn7l.execute-api.us-east-1.amazonaws.com/checkReservation';
 const BOOK_URL = 'https://1ndmxvwn7l.execute-api.us-east-1.amazonaws.com/reservation';
 
@@ -111,10 +41,11 @@ function Booking() {
   const [status, setStatus] = useState('pending');
   const [showSnack, setShowSnack] = useState(false);
   const [showForm, setShowForm] = useState(true);
-  const [state, dispatch] = useReducer(reducer, initialState);
-  const { handleSubmit, control } = useForm({
+  const { handleSubmit, control, getValues } = useForm({
     resolver: yupResolver(schema),
-    defaultValues: { size: 2, area: 'floor', datetime: dayjs() },
+    defaultValues: {
+      size: 2, area: 'floor', datetime: dayjs(), notes: '', occasion: '', customer: { name: '', email: '', phone: '' },
+    },
   });
 
   const timeVals = useWatch({ control, name: ['size', 'area', 'datetime'] });
@@ -135,9 +66,10 @@ function Booking() {
     }
   }, [timeVals]);
 
-  const createReservation = () => {
+  const createReservation = (data, e) => {
+    e.preventDefault();
     axios
-      .post(BOOK_URL, state)
+      .post(BOOK_URL, { ...data, datetime: dayjs(data.datetime).unix() })
       .then((res) => {
         if (res.data.status === 'OK') {
           setShowSnack(true);
@@ -152,7 +84,7 @@ function Booking() {
         <img src={logo} className="App-logo" alt="logo" />
       </header>
       {showForm && (
-        <form onSubmit={() => handleSubmit(createReservation)}>
+        <form onSubmit={handleSubmit(createReservation)}>
           <Box
             sx={{
               display: 'flex',
@@ -213,57 +145,94 @@ function Booking() {
             )}
           </Box>
           {status === 'success' && (
-          <>
-            <Box py={5}>
-              <Typography pb={5}>
-                We have a table available! Enter your information below:
-              </Typography>
-              <Box>
-                <TextField
-                  required
-                  label="Name"
-                  onChange={(e) => dispatch({ type: 'setCustName', payload: e.target.value })}
-                  value={state.custName}
-                />
-                <TextField
-                  required
-                  label="E-mail"
-                  onChange={(e) => dispatch({ type: 'setCustEmail', payload: e.target.value })}
-                  value={state.custEmail}
-                />
-                <TextField
-                  required
-                  label="Phone"
-                  onChange={(e) => dispatch({ type: 'setCustPhone', payload: e.target.value })}
-                  value={state.custPhone}
-                />
+            <>
+              <Box py={5}>
+                <Typography pb={5}>
+                  We have a table available! Enter your information below:
+                </Typography>
+                <Box>
+                  <Controller
+                    name="customer.name"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        name={field.name}
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        placeholder="Name"
+                      />
+                    )}
+                  />
+                  <Controller
+                    name="customer.email"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        name={field.name}
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        placeholder="E-mail"
+                      />
+                    )}
+                  />
+                  <Controller
+                    name="customer.phone"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        name={field.name}
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        placeholder="Phone"
+                      />
+                    )}
+                  />
+                </Box>
+                <Box pt={2}>
+                  <Controller
+                    name="notes"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        name={field.name}
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        placeholder="Notes"
+                      />
+                    )}
+                  />
+                  <Controller
+                    name="occasion"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        value={field.value}
+                        name={field.name}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        displayEmpty
+                      >
+                        <MenuItem value="">Special Occasion?</MenuItem>
+                        <MenuItem value="birthday">Birthday</MenuItem>
+                        <MenuItem value="anniversary">Anniversary</MenuItem>
+                        <MenuItem value="date">Date Night</MenuItem>
+                        <MenuItem value="business">Business Dinner</MenuItem>
+                        <MenuItem value="celebration">Celebration</MenuItem>
+                      </Select>
+                    )}
+                  />
+                </Box>
               </Box>
-              <Box pt={2}>
-                <TextField
-                  value={state.notes}
-                  label="Notes"
-                  onChange={(e) => dispatch({ type: 'setNotes', payload: e.target.value })}
-                />
-                <Select
-                  value={state.occasion}
-                  onChange={(e) => dispatch({ type: 'setOccasion', payload: e.target.value })}
-                  displayEmpty
-                >
-                  <MenuItem value="">Special Occasion?</MenuItem>
-                  <MenuItem value="birthday">Birthday</MenuItem>
-                  <MenuItem value="anniversary">Anniversary</MenuItem>
-                  <MenuItem value="date">Date Night</MenuItem>
-                  <MenuItem value="business">Business Dinner</MenuItem>
-                  <MenuItem value="celebration">Celebration</MenuItem>
-                </Select>
+              <Box py={5}>
+                <Button variant="contained" type="submit">
+                  Create Reservation
+                </Button>
               </Box>
-            </Box>
-            <Box py={5}>
-              <Button variant="contained" onClick={createReservation}>
-                Create Reservation
-              </Button>
-            </Box>
-          </>
+            </>
           )}
         </form>
       )}
@@ -276,7 +245,7 @@ function Booking() {
             alignItems: 'center',
           }}
         >
-          {`Your reservation for ${state.customer.name} has been booked successfully`}
+          {`Your reservation for ${getValues('customer.name')} has been booked successfully`}
         </Box>
       )}
       <Snackbar

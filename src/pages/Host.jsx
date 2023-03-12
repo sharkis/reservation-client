@@ -12,7 +12,7 @@ const work = new Worker(new URL('/workers/interval.js', 'http://localhost:3000')
 
 function Host() {
   const [reservations, setReservations] = useState([]);
-  const [qdate] = useState(new Date().getTime());
+  const [qdate] = useState(new Date().getTime() / 1000);
   const [time, setTime] = useState(Date.now());
   const intWorker = useRef(work);
 
@@ -35,13 +35,16 @@ function Host() {
 
   const columns = [
     { title: 'Date/Time', field: 'timestamp', render: (rowData) => dayjs.unix(rowData.timestamp).format('h:mm A') },
+    { title: 'Customer', field: 'customer.name' },
     { title: 'Area', field: 'area' },
     { title: 'Size', field: 'size' },
-    { title: 'Customer', field: 'customer.name' },
+    { title: 'Occasion', field: 'occasion' },
   ];
+
   const currentReservations = reservations
     .filter((r) => r.timestamp > (time / 1000))
     .sort((a, b) => a.timestamp - b.timestamp);
+
   return (
     <>
       <Typography variant="h3">Reservations</Typography>
