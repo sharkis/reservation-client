@@ -8,7 +8,7 @@ import { Refresh } from '@mui/icons-material';
 
 const API_URL = 'https://1ndmxvwn7l.execute-api.us-east-1.amazonaws.com/reservation';
 
-const work = new Worker(new URL('/workers/interval.js', process.env.PUBLIC_URL || 'http://localhost:3000'));
+const work = new Worker('/workers/interval.js');
 
 function Host() {
   const [reservations, setReservations] = useState([]);
