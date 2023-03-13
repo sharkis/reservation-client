@@ -34,8 +34,8 @@ const schema = yup.object({
   }),
 }).required();
 
-const API_URL = `${process.env.API_URL}/checkReservation`;
-const BOOK_URL = `${process.env.API_URL}/reservation`;
+const API_URL = `${process.env.REACT_APP_API_URL}/checkReservation`;
+const BOOK_URL = `${process.env.REACT_APP_API_URL}/reservation`;
 
 function Booking() {
   const [status, setStatus] = useState('');

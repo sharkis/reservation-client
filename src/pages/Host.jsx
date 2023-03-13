@@ -6,7 +6,7 @@ import { Typography } from '@mui/material';
 import dayjs from 'dayjs';
 import { Refresh } from '@mui/icons-material';
 
-const API_URL = 'https://1ndmxvwn7l.execute-api.us-east-1.amazonaws.com/reservation';
+const API_URL = `${process.env.REACT_APP_API_URL}/reservation`;
 
 const work = new Worker('/workers/interval.js');
 
