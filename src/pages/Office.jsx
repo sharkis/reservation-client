@@ -4,13 +4,14 @@ import MaterialTable from '@material-table/core';
 import axios from 'axios';
 import { Typography } from '@mui/material';
 import dayjs from 'dayjs';
-import { Refresh } from '@mui/icons-material';
+import { Refresh, ContactPage } from '@mui/icons-material';
+import { DatePicker } from '@mui/x-date-pickers';
 
 const API_URL = `${process.env.REACT_APP_API_URL}/reservation`;
 
 function Office() {
   const [reservations, setReservations] = useState([]);
-  const [qdate] = useState(new Date().getTime() / 1000);
+  const [qdate, setQDate] = useState(new Date().getTime() / 1000);
 
   const fetchReservations = () => {
     axios.get(API_URL, { params: { datetime: qdate } })
@@ -21,14 +22,20 @@ function Office() {
 
   useEffect(() => {
     fetchReservations();
-  }, []);
+  }, [qdate]);
+
+  const areas = {
+    floor: 'Dining Floor',
+    bar: 'Bar',
+    patio: 'Patio',
+  };
 
   const columns = [
     { title: 'Date/Time', field: 'timestamp', render: (rowData) => dayjs.unix(rowData.timestamp).format('h:mm A') },
     { title: 'Customer', field: 'customer.name' },
     { title: 'Email', field: 'customer.email' },
     { title: 'Phone', field: 'customer.phone' },
-    { title: 'Area', field: 'area' },
+    { title: 'Area', field: 'area', render: ({ area }) => areas[area] },
     { title: 'Size', field: 'size' },
     { title: 'Occasion', field: 'occasion' },
   ];
@@ -39,10 +46,12 @@ function Office() {
   return (
     <>
       <Typography variant="h3">Reservations</Typography>
+      <DatePicker onChange={(v) => setQDate(v.unix())} defaultValue={dayjs()} />
       <MaterialTable
         data={currentReservations}
         columns={columns}
-        actions={[{ icon: Refresh, isFreeAction: true, onClick: fetchReservations }]}
+        actions={[{ icon: Refresh, isFreeAction: true, onClick: fetchReservations },
+          { icon: ContactPage }]}
       />
     </>
   );

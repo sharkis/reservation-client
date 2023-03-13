@@ -83,6 +83,7 @@ function Booking() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
       </header>
+      <Typography variant="h5">Check for table availability:</Typography>
       {showForm && (
         <form onSubmit={handleSubmit(createReservation)}>
           <Box
@@ -91,6 +92,7 @@ function Booking() {
               flexDirection: 'row',
               justifyContent: 'center',
               alignItems: 'center',
+              gap: '10px',
             }}
           >
             <Controller

@@ -34,10 +34,16 @@ function Host() {
     fetchReservations();
   }, []);
 
+  const areas = {
+    floor: 'Dining Floor',
+    bar: 'Bar',
+    patio: 'Patio',
+  };
+
   const columns = [
     { title: 'Date/Time', field: 'timestamp', render: (rowData) => dayjs.unix(rowData.timestamp).format('h:mm A') },
     { title: 'Customer', field: 'customer.name' },
-    { title: 'Area', field: 'area' },
+    { title: 'Area', field: 'area', render: ({ area }) => areas[area] },
     { title: 'Size', field: 'size' },
     { title: 'Occasion', field: 'occasion' },
   ];
