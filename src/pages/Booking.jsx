@@ -34,17 +34,17 @@ const schema = yup.object({
   }),
 }).required();
 
-const API_URL = 'https://1ndmxvwn7l.execute-api.us-east-1.amazonaws.com/checkReservation';
-const BOOK_URL = 'https://1ndmxvwn7l.execute-api.us-east-1.amazonaws.com/reservation';
+const API_URL = `${process.env.API_URL}/checkReservation`;
+const BOOK_URL = `${process.env.API_URL}/reservation`;
 
 function Booking() {
-  const [status, setStatus] = useState('pending');
+  const [status, setStatus] = useState('');
   const [showSnack, setShowSnack] = useState(false);
   const [showForm, setShowForm] = useState(true);
   const { handleSubmit, control, getValues } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      size: 2, area: 'floor', datetime: dayjs(), notes: '', occasion: '', customer: { name: '', email: '', phone: '' },
+      size: 2, area: 'floor', datetime: null, notes: '', occasion: '', customer: { name: '', email: '', phone: '' },
     },
   });
 
