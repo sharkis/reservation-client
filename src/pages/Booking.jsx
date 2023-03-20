@@ -12,7 +12,7 @@ import {
   Typography,
 } from '@mui/material';
 import { Box } from '@mui/system';
-import { DateTimePicker } from '@mui/x-date-pickers';
+import { DatePicker, MobileTimePicker } from '@mui/x-date-pickers';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import _ from 'lodash';
@@ -21,18 +21,22 @@ import * as yup from 'yup';
 import '../App.css';
 import logo from '../assets/lightlogo.png';
 
-const schema = yup.object({
-  size: yup.number().positive().integer().required(),
-  area: yup.string(),
-  occasion: yup.string(),
-  datetime: yup.date(),
-  notes: yup.string(),
-  customer: yup.object({
-    name: yup.string().required(),
-    email: yup.string().required(),
-    phone: yup.string().required(),
-  }),
-}).required();
+const schema = yup
+  .object({
+    size: yup.number().positive().integer().required(),
+    area: yup.string(),
+    occasion: yup.string(),
+    restrictions: yup.string(),
+    date: yup.date(),
+    time: yup.date(),
+    notes: yup.string(),
+    customer: yup.object({
+      name: yup.string().required(),
+      email: yup.string().required(),
+      phone: yup.string().required(),
+    }),
+  })
+  .required();
 
 const API_URL = `${process.env.REACT_APP_API_URL}/checkReservation`;
 const BOOK_URL = `${process.env.REACT_APP_API_URL}/reservation`;
@@ -44,66 +48,95 @@ function Booking() {
   const { handleSubmit, control, getValues } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      size: 2, area: 'floor', datetime: null, notes: '', occasion: '', customer: { name: '', email: '', phone: '' },
+      size: 2,
+      area: 'floor',
+      date: null,
+      time: null,
+      notes: '',
+      occasion: '',
+      restrictions: '',
+      customer: { name: '', email: '', phone: '' },
     },
   });
 
-  const timeVals = useWatch({ control, name: ['size', 'area', 'datetime'] });
+  const timeVals = useWatch({
+    control,
+    name: ['size', 'area', 'date', 'time'],
+  });
 
   useEffect(() => {
     if (!timeVals.some((t) => t === null)) {
       setStatus('pending');
-      axios
-        .post(API_URL, { size: timeVals[0], area: timeVals[1], timestamp: timeVals[2].unix() })
-        .then((res) => {
-          if (res.data.available === true) {
-            setStatus('success');
-          }
-          if (res.data.available === false) {
-            setStatus('fail');
-          }
-        });
+      axios.post(API_URL, {
+        size: timeVals[0],
+        area: timeVals[1],
+        timestamp: (timeVals[2].unix() / 86400) + (timeVals[3].unix() % 86400),
+      }).then((res) => {
+        if (res.data.available === true) {
+          setStatus('success');
+        }
+        if (res.data.available === false) {
+          setStatus('fail');
+        }
+      });
     }
   }, [timeVals]);
 
   const createReservation = (data, e) => {
     e.preventDefault();
-    axios
-      .post(BOOK_URL, { ...data, datetime: dayjs(data.datetime).unix() })
-      .then((res) => {
-        if (res.data.status === 'OK') {
-          setShowSnack(true);
-          setShowForm(false);
-        }
-      });
+    axios.post(BOOK_URL, {
+      ...data,
+      datetime: dayjs(data.datetime).unix(),
+    }).then((res) => {
+      if (res.data.status === 'OK') {
+        setShowSnack(true);
+        setShowForm(false);
+      }
+    });
   };
 
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+        <img
+          src={logo}
+          className="App-logo"
+          alt="logo"
+        />
       </header>
-      <Typography variant="h5">Check for table availability:</Typography>
+      <Typography variant="h5">
+        Check for table availability:
+      </Typography>
       {showForm && (
-        <form onSubmit={handleSubmit(createReservation)}>
+        <form
+          onSubmit={handleSubmit(createReservation)}
+        >
           <Box
             sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-              gap: '10px',
+              display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: '10px',
             }}
           >
             <Controller
-              name="datetime"
+              name="date"
               control={control}
               render={({ field }) => (
-                <DateTimePicker
+                <DatePicker
                   disablePast
                   onChange={field.onChange}
                   name={field.name}
                   value={dayjs(field.value)}
+                />
+              )}
+            />
+            <Controller
+              name="time"
+              control={control}
+              render={({ field }) => (
+                <MobileTimePicker
+                  onChange={field.onChange}
+                  name={field.name}
+                  value={dayjs(field.value)}
+                  minutesStep={15}
                 />
               )}
             />
@@ -118,9 +151,11 @@ function Booking() {
                   onBlur={field.onBlur}
                 >
                   {_.range(1, 20).map((v) => (
-                    <MenuItem value={v}>{`${v} people`}</MenuItem>
+                    <MenuItem value={v}>
+                      {' '}
+                      {`${v} people`}
+                    </MenuItem>
                   ))}
-
                 </Select>
               )}
             />
@@ -134,23 +169,46 @@ function Booking() {
                   onChange={field.onChange}
                   onBlur={field.onBlur}
                 >
-                  <MenuItem value="floor">Dining Floor</MenuItem>
-                  <MenuItem value="patio">Patio</MenuItem>
-                  <MenuItem value="bar">Bar</MenuItem>
+                  <MenuItem value="floor">
+                    Dining
+                    Floor
+                  </MenuItem>
+                  <MenuItem value="patio">
+                    Patio
+                  </MenuItem>
+                  <MenuItem value="bar">
+                    Bar
+                  </MenuItem>
                 </Select>
               )}
             />
-            {status === 'pending' && <Sync className="spinner" />}
-            {status === 'fail' && <Cancel sx={{ color: 'red' }} />}
+            {status === 'pending' && (
+              <Sync className="spinner" />
+            )}
+            {status === 'fail' && (
+              <Cancel
+                sx={{ color: 'red' }}
+              />
+            )}
             {status === 'success' && (
-              <CheckCircle sx={{ color: 'green' }} />
+              <CheckCircle
+                sx={{ color: 'green' }}
+              />
             )}
           </Box>
           {status === 'success' && (
             <>
               <Box py={5}>
-                <Typography pb={5}>
-                  We have a table available! Enter your information below:
+                <Typography
+                  pb={5}
+                >
+                  We have
+                  a table
+                  available!
+                  Enter
+                  your
+                  information
+                  below:
                 </Typography>
                 <Box>
                   <Controller
@@ -218,20 +276,86 @@ function Booking() {
                         onBlur={field.onBlur}
                         displayEmpty
                       >
-                        <MenuItem value="">Special Occasion?</MenuItem>
-                        <MenuItem value="birthday">Birthday</MenuItem>
-                        <MenuItem value="anniversary">Anniversary</MenuItem>
-                        <MenuItem value="date">Date Night</MenuItem>
-                        <MenuItem value="business">Business Dinner</MenuItem>
-                        <MenuItem value="celebration">Celebration</MenuItem>
+                        <MenuItem value="">
+                          Special
+                          Occasion?
+                        </MenuItem>
+                        <MenuItem value="birthday">
+                          Birthday
+                        </MenuItem>
+                        <MenuItem value="anniversary">
+                          Anniversary
+                        </MenuItem>
+                        <MenuItem value="date">
+                          Date
+                          Night
+                        </MenuItem>
+                        <MenuItem value="business">
+                          Business
+                          Dinner
+                        </MenuItem>
+                        <MenuItem value="celebration">
+                          Celebration
+                        </MenuItem>
+                      </Select>
+                    )}
+                  />
+                  <Controller
+                    name="restrictions"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        value={field.value}
+                        name={field.name}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        displayEmpty
+                      >
+                        <MenuItem value="">
+                          Dietary
+                          Preferences
+                        </MenuItem>
+                        <MenuItem value="vegan">
+                          Vegan
+                        </MenuItem>
+                        <MenuItem value="vegetarian">
+                          Vegetarian
+                        </MenuItem>
+                        <MenuItem value="gf">
+                          Gluten-Free
+                        </MenuItem>
+                        <MenuItem value="nuts">
+                          Nut
+                          Allergy
+                        </MenuItem>
+                        <MenuItem value="milk">
+                          Milk
+                          Allergy
+                        </MenuItem>
+                        <MenuItem value="egg">
+                          Egg
+                          Allergy
+                        </MenuItem>
+                        <MenuItem value="fish">
+                          Fish
+                          Allergy
+                        </MenuItem>
+                        <MenuItem value="shellfish">
+                          Shellfish
+                          Allergy
+                        </MenuItem>
                       </Select>
                     )}
                   />
                 </Box>
               </Box>
               <Box py={5}>
-                <Button variant="contained" type="submit">
-                  Create Reservation
+                <Button
+                  variant="contained"
+                  type="submit"
+                >
+                  Create
+                  Reservation
                 </Button>
               </Box>
             </>
@@ -241,10 +365,7 @@ function Booking() {
       {!showForm && (
         <Box
           sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
+            display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center',
           }}
         >
           {`Your reservation for ${getValues('customer.name')} has been booked successfully`}
@@ -255,7 +376,9 @@ function Booking() {
         autoHideDuration={6000}
         onClose={() => setShowSnack(false)}
       >
-        <Alert severity="success">Reservation created successfully!</Alert>
+        <Alert severity="success">
+          Reservation created successfully!
+        </Alert>
       </Snackbar>
     </div>
   );
