@@ -70,7 +70,7 @@ function Booking() {
       axios.post(API_URL, {
         size: timeVals[0],
         area: timeVals[1],
-        timestamp: (timeVals[2].unix() / 86400) + (timeVals[3].unix() % 86400),
+        timestamp: Math.floor(timeVals[2].unix() / 86400) * 86400 + (timeVals[3].unix() % 86400),
       }).then((res) => {
         if (res.data.available === true) {
           setStatus('success');
@@ -86,7 +86,7 @@ function Booking() {
     e.preventDefault();
     axios.post(BOOK_URL, {
       ...data,
-      datetime: dayjs(data.datetime).unix(),
+      datetime: Math.floor(timeVals[2].unix() / 86400) * 86400 + (timeVals[3].unix() % 86400),
     }).then((res) => {
       if (res.data.status === 'OK') {
         setShowSnack(true);
@@ -137,6 +137,7 @@ function Booking() {
                   name={field.name}
                   value={dayjs(field.value)}
                   minutesStep={15}
+                  ampmInClock
                 />
               )}
             />
