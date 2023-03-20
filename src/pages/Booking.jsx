@@ -51,7 +51,7 @@ function Booking() {
       size: 2,
       area: 'floor',
       date: null,
-      time: null,
+      time: dayjs().set('hours', 12).set('minutes', 0),
       notes: '',
       occasion: '',
       restrictions: '',
@@ -151,7 +151,8 @@ function Booking() {
                   onChange={field.onChange}
                   onBlur={field.onBlur}
                 >
-                  {_.range(1, 20).map((v) => (
+                  <MenuItem value={1}>1 person</MenuItem>
+                  {_.range(2, 21).map((v) => (
                     <MenuItem value={v}>
                       {' '}
                       {`${v} people`}
