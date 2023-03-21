@@ -35,6 +35,14 @@ function Layout() {
       <Header />
       <Stage width={640} height={480}>
         <Layer>
+          <Rect
+            x={0}
+            y={0}
+            width={640}
+            height={480}
+            fill="#fff"
+            stroke="#000"
+          />
           {tables.map((table) => (
             <Rect
               key={table.id}
@@ -51,6 +59,7 @@ function Layout() {
           ))}
         </Layer>
       </Stage>
+
       <Button>Save Layout</Button>
     </>
   );
