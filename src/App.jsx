@@ -4,7 +4,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import {
-  Booking, Host, Office, OfficeMain, VIPs,
+  Booking, Host, Layout, Office, OfficeMain, Settings, VIPs,
 } from './pages';
 
 function App() {
@@ -28,6 +28,14 @@ function App() {
     {
       path: '/office/vips',
       element: <VIPs />,
+    },
+    {
+      path: '/office/settings',
+      element: <Settings />,
+    },
+    {
+      path: '/office/layout',
+      element: <Layout />,
     },
   ]);
 
