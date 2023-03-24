@@ -1,38 +1,59 @@
-import { Button } from '@mui/material';
-import React, { useState } from 'react';
-import { Layer, Stage, Rect } from 'react-konva';
-import Header from '../components';
+import React, { useState } from "react";
 
-const generateShapes = () => [...Array(10)].map((_, i) => ({
-  id: i.toString(),
-  x: Math.random() * 640,
-  y: Math.random() * 480,
-  isDragging: false,
-}));
-const INIT_STATE = generateShapes();
+import { Button, Snackbar, Alert } from "@mui/material";
+import { Layer, Stage, Rect } from "react-konva";
+import axios from "axios";
+import Header from "../components";
+
+const API_URL = `${process.env.REACT_APP_API_URL}/tables`;
 
 function Layout() {
-  const [tables, setTables] = useState(INIT_STATE);
+  const [tables, setTables] = useState([]);
+  const [showSnack, setShowSnack] = useState(false);
+
   const handleDragStart = (e) => {
     const id = e.target.id();
     setTables(
       tables.map((table) => ({
         ...table,
         isDragging: table.id === id,
-      })),
+      }))
     );
   };
+
   const handleDragEnd = () => {
     setTables(
       tables.map((table) => ({
         ...table,
         isDragging: false,
-      })),
+      }))
     );
   };
+
+  const saveTables = ()=>{
+    axios.post(API_URL).then((res)=>{
+      setShowSnack(true);
+    }).catch((e)=>{console.log(e));
+
+  };
+
+  useEffect(() => {
+    // load tables from server
+    axios.get(API_URL).then((res) =>{
+      setTables(res.data.items);
+    }).catch((e)=>{
+      console.log(e);
+    });
+  }, []);
+
+
   return (
     <>
+      <Dialog open={showTableDialog} onClose={() => setShowTableDialog(false)}>
+        table stuff
+      </Dialog>
       <Header />
+      <Button onPress={saveTables} >Save Layout</Button>
       <Stage width={640} height={480}>
         <Layer>
           <Rect
@@ -60,7 +81,16 @@ function Layout() {
         </Layer>
       </Stage>
 
-      <Button>Save Layout</Button>
+      <Button onPress={saveTables} >Save Layout</Button>
+      <Snackbar
+        open={showSnack}
+        autoHideDuration={6000}
+        onClose={() => setShowSnack(false)}
+      >
+        <Alert severity="success">
+          Tables saved successfully!
+        </Alert>
+      </Snackbar>
     </>
   );
 }
