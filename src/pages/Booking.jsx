@@ -152,7 +152,7 @@ function Booking() {
                   onBlur={field.onBlur}
                 >
                   <MenuItem value={1}>1 person</MenuItem>
-                  {_.range(2, 21).map((v) => (
+                  {_.range(2, 6).map((v) => (
                     <MenuItem value={v}>
                       {' '}
                       {`${v} people`}
