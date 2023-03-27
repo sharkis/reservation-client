@@ -6,6 +6,9 @@ import { Typography } from '@mui/material';
 import dayjs from 'dayjs';
 import { Refresh, ContactPage } from '@mui/icons-material';
 import { DatePicker } from '@mui/x-date-pickers';
+import { Authenticator } from '@aws-amplify/ui-react';
+// eslint-disable-next-line import/no-unresolved
+import '@aws-amplify/ui-react/styles.css';
 import Header from '../components';
 
 const API_URL = `${process.env.REACT_APP_API_URL}/reservation`;
@@ -45,7 +48,7 @@ function Office() {
     .sort((a, b) => a.timestamp - b.timestamp);
 
   return (
-    <>
+    <Authenticator>
       <Header />
       <Typography variant="h3">Reservations</Typography>
       <DatePicker onChange={(v) => setQDate(v.unix())} defaultValue={dayjs()} />
@@ -55,7 +58,8 @@ function Office() {
         actions={[{ icon: Refresh, isFreeAction: true, onClick: fetchReservations },
           { icon: ContactPage }]}
       />
-    </>
+
+    </Authenticator>
   );
 }
 

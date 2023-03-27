@@ -9,6 +9,9 @@ import { Controller, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import axios from 'axios';
+import { Authenticator } from '@aws-amplify/ui-react';
+// eslint-disable-next-line import/no-unresolved
+import '@aws-amplify/ui-react/styles.css';
 import Header from '../components';
 
 const API_URL = `${process.env.REACT_APP_API_URL}/vips`;
@@ -73,7 +76,7 @@ function VIPs() {
     },
   ];
   return (
-    <>
+    <Authenticator>
       <Dialog open={showAddDialog} onClose={() => setShowAddDialog(false)}>
         <form onSubmit={handleSubmit(createVip)}>
           <Box p={5} sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -109,7 +112,7 @@ function VIPs() {
           VIP created successfully!
         </Alert>
       </Snackbar>
-    </>
+    </Authenticator>
   );
 }
 

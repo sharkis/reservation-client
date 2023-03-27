@@ -1,32 +1,16 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Authenticator } from '@aws-amplify/ui-react';
+// eslint-disable-next-line import/no-unresolved
+import '@aws-amplify/ui-react/styles.css';
+import { Typography } from '@mui/material';
+import Header from '../components';
 
 function OfficeMain() {
   return (
-    <div>
-      <ul>
-        <li>
-          <Link to="/office/reservations">
-            Reservations
-          </Link>
-        </li>
-        <li>
-          <Link to="/office/layout">
-            Layout
-          </Link>
-        </li>
-        <li>
-          <Link to="/office/vips">
-            VIPs
-          </Link>
-        </li>
-        <li>
-          <Link to="/office/settings">
-            Settings
-          </Link>
-        </li>
-      </ul>
-    </div>
+    <Authenticator>
+      <Header />
+      <Typography variant="h4">Lola Rose Booking Admin</Typography>
+    </Authenticator>
   );
 }
 

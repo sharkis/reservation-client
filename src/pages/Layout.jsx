@@ -33,7 +33,6 @@ function Layout() {
   const handleDragEnd = (e) => {
     const newTables = [...tables];
     const id = e.target.id();
-    console.log(id);
     const newx = e.target.x();
     const newy = e.target.y();
     const newidx = tables.findIndex((t) => t.id === id);
@@ -75,8 +74,6 @@ function Layout() {
       });
   }, []);
 
-  console.log(tables);
-
   return (
     <Authenticator>
       <Dialog open={showTableDialog} onClose={() => setShowTableDialog(false)}>
@@ -99,7 +96,7 @@ function Layout() {
               ctx.fillStrokeShape(shape);
             }}
             stroke="#000"
-            fill="#eaeaea"
+            fill="#ccc"
           />
           {tables.map((table) => (
             <Rect
