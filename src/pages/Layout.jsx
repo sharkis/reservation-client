@@ -8,6 +8,9 @@ import {
 } from 'react-konva';
 import axios from 'axios';
 import { v4 } from 'uuid';
+import { Authenticator } from '@aws-amplify/ui-react';
+// eslint-disable-next-line import/no-unresolved
+import '@aws-amplify/ui-react/styles.css';
 import Header from '../components';
 
 const API_URL = `${process.env.REACT_APP_API_URL}/tables`;
@@ -75,7 +78,7 @@ function Layout() {
   console.log(tables);
 
   return (
-    <>
+    <Authenticator>
       <Dialog open={showTableDialog} onClose={() => setShowTableDialog(false)}>
         table stuff
       </Dialog>
@@ -124,7 +127,8 @@ function Layout() {
       >
         <Alert severity="success">Tables saved successfully!</Alert>
       </Snackbar>
-    </>
+
+    </Authenticator>
   );
 }
 
