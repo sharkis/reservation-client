@@ -1,3 +1,4 @@
+import Admins from './Admins';
 import Booking from './Booking';
 import Host from './Host';
 import Layout from './Layout';
@@ -7,5 +8,5 @@ import Settings from './Settings';
 import VIPs from './VIPs';
 
 export {
-  Booking, Host, Layout, Office, OfficeMain, Settings, VIPs,
+  Admins, Booking, Host, Layout, Office, OfficeMain, Settings, VIPs,
 };
