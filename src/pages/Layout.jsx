@@ -2,8 +2,9 @@
 import React, { useEffect, useReducer, useState } from 'react';
 
 import {
-  Button, Snackbar, Alert, Dialog, TextField, Paper, DialogContent, DialogTitle,
+  Button, Snackbar, Alert, Dialog, TextField, Paper, DialogContent, DialogTitle, IconButton,
 } from '@mui/material';
+import { RotateLeft, RotateRight } from '@mui/icons-material';
 import {
   Layer, Stage, Rect, Shape, Text,
 } from 'react-konva';
@@ -176,8 +177,8 @@ function Layout() {
       >
         <DialogTitle id="draggable-dialog-title">Edit Table</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column' }}>
-          <Button onClick={() => rotateTable(false)}>ror</Button>
-          <Button onClick={() => rotateTable(true)}>rol</Button>
+          <IconButton onClick={() => rotateTable(false)}><RotateLeft /></IconButton>
+          <IconButton onClick={() => rotateTable(true)}><RotateRight /></IconButton>
           <TextField
             placeholder="capacity"
             value={table.capacity}
