@@ -317,23 +317,6 @@ function Booking() {
                           Dietary
                           Preferences
                         </MenuItem>
-                        <MenuItem value="vegan">
-                          Vegan
-                        </MenuItem>
-                        <MenuItem value="vegetarian">
-                          Vegetarian
-                        </MenuItem>
-                        <MenuItem value="gf">
-                          Gluten-Free
-                        </MenuItem>
-                        <MenuItem value="nuts">
-                          Nut
-                          Allergy
-                        </MenuItem>
-                        <MenuItem value="milk">
-                          Milk
-                          Allergy
-                        </MenuItem>
                         <MenuItem value="egg">
                           Egg
                           Allergy
@@ -342,9 +325,26 @@ function Booking() {
                           Fish
                           Allergy
                         </MenuItem>
+                        <MenuItem value="gf">
+                          Gluten-Free
+                        </MenuItem>
+                        <MenuItem value="milk">
+                          Milk
+                          Allergy
+                        </MenuItem>
+                        <MenuItem value="nuts">
+                          Nut
+                          Allergy
+                        </MenuItem>
                         <MenuItem value="shellfish">
                           Shellfish
                           Allergy
+                        </MenuItem>
+                        <MenuItem value="vegan">
+                          Vegan
+                        </MenuItem>
+                        <MenuItem value="vegetarian">
+                          Vegetarian
                         </MenuItem>
                       </Select>
                     )}
