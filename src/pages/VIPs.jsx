@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 
-import MaterialTable from "@material-table/core";
-import { PersonAdd } from "@mui/icons-material";
+import MaterialTable from '@material-table/core';
+import { PersonAdd } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -10,15 +10,15 @@ import {
   Snackbar,
   Alert,
   Typography,
-} from "@mui/material";
-import { Controller, useForm } from "react-hook-form";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-import axios from "axios";
-import { Authenticator } from "@aws-amplify/ui-react";
+} from '@mui/material';
+import { Controller, useForm } from 'react-hook-form';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
+import axios from 'axios';
+import { Authenticator } from '@aws-amplify/ui-react';
 // eslint-disable-next-line import/no-unresolved
-import "@aws-amplify/ui-react/styles.css";
-import Header from "../components";
+import '@aws-amplify/ui-react/styles.css';
+import Header from '../components';
 
 const API_URL = `${process.env.REACT_APP_API_URL}/vips`;
 const SINGLE_URL = `${process.env.REACT_APP_API_URL}/vip`;
@@ -41,14 +41,14 @@ function VIPs() {
   const { handleSubmit, control } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      name: "",
-      phone: "",
-      email: "",
-      notes: "",
-      relationship: "",
-      seating: "",
-      food: "",
-      drink: "",
+      name: '',
+      phone: '',
+      email: '',
+      notes: '',
+      relationship: '',
+      seating: '',
+      food: '',
+      drink: '',
     },
   });
 
@@ -59,7 +59,7 @@ function VIPs() {
         setVips(res.data.items);
       })
       .catch((e) => {
-        console.log(e);
+        console.error(e);
       });
   };
 
@@ -70,7 +70,7 @@ function VIPs() {
         ...data,
       })
       .then((res) => {
-        if (res.data.status === "OK") {
+        if (res.data.status === 'OK') {
           setShowAddDialog(false);
           setShowSnack(true);
         }
@@ -83,36 +83,36 @@ function VIPs() {
 
   const columns = [
     {
-      title: "Name",
-      field: "name",
+      title: 'Name',
+      field: 'name',
     },
     {
-      title: "Phone",
-      field: "phone",
+      title: 'Phone',
+      field: 'phone',
     },
     {
-      title: "Email",
-      field: "email",
+      title: 'Email',
+      field: 'email',
     },
     {
-      title: "Notes",
-      field: "notes",
+      title: 'Notes',
+      field: 'notes',
     },
     {
-      title: "Relationship",
-      field: "relationship",
+      title: 'Relationship',
+      field: 'relationship',
     },
     {
-      title: "Seating Preferences",
-      field: "seating",
+      title: 'Seating Preferences',
+      field: 'seating',
     },
     {
-      title: "Food Preferences",
-      field: "food",
+      title: 'Food Preferences',
+      field: 'food',
     },
     {
-      title: "Drink Preferences",
-      field: "drink",
+      title: 'Drink Preferences',
+      field: 'drink',
     },
   ];
   return (
@@ -121,7 +121,7 @@ function VIPs() {
         <form onSubmit={handleSubmit(createVip)}>
           <Box
             p={5}
-            sx={{ display: "flex", flexDirection: "column", gap: "10px" }}
+            sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}
           >
             <Typography variant="h4">Add VIP</Typography>
             <Controller
