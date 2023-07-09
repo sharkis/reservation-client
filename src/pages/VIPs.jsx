@@ -24,9 +24,10 @@ const API_URL = `${process.env.REACT_APP_API_URL}/vips`;
 const SINGLE_URL = `${process.env.REACT_APP_API_URL}/vip`;
 
 const schema = yup.object({
+  uuid: yup.string().required(),
   name: yup.string().required(),
-  phone: yup.string().required(),
-  email: yup.string().required(),
+  phone: yup.string(),
+  email: yup.string(),
   notes: yup.string(),
   relationship: yup.string(),
   seating: yup.string(),
@@ -42,6 +43,7 @@ function VIPs() {
   const { control, handleSubmit, reset } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
+      uuid: '',
       name: '',
       phone: '',
       email: '',
@@ -85,6 +87,7 @@ function VIPs() {
   }, []);
 
   const columns = [
+    { title: 'ID', field: 'uuid', hidden: true },
     {
       title: 'Name',
       field: 'name',
