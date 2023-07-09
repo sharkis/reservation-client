@@ -249,7 +249,7 @@ function VIPs() {
           {
             icon: PersonAdd,
             isFreeAction: true,
-            onClick: () => setShowAddDialog(true),
+            onClick: () => { reset(); setShowAddDialog(true); },
           },
           {
             icon: Edit,
