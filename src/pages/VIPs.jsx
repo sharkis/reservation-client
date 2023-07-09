@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import MaterialTable from '@material-table/core';
-import { PersonAdd } from '@mui/icons-material';
+import { Edit, PersonAdd } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -38,7 +38,8 @@ function VIPs() {
   const [vips, setVips] = useState([]);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showSnack, setShowSnack] = useState(false);
-  const { handleSubmit, control } = useForm({
+  const [isEditing, setIsEditing] = useState(false);
+  const { control, handleSubmit, reset } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
       name: '',
@@ -65,12 +66,14 @@ function VIPs() {
 
   const createVip = (data, e) => {
     e.preventDefault();
-    axios
-      .post(SINGLE_URL, {
-        ...data,
-      })
+    axios({
+      method: isEditing ? 'put' : 'post',
+      url: SINGLE_URL,
+      data,
+    })
       .then((res) => {
         if (res.data.status === 'OK') {
+          setIsEditing(false);
           setShowAddDialog(false);
           setShowSnack(true);
         }
@@ -172,7 +175,7 @@ function VIPs() {
                   value={field.value}
                   onChange={field.onChange}
                   onBlur={field.onBlur}
-                  placeholder="notes"
+                  placeholder="Notes"
                 />
               )}
             />
@@ -229,7 +232,7 @@ function VIPs() {
               )}
             />
             <Button variant="contained" type="submit">
-              Create VIP
+              {isEditing ? 'Edit VIP' : 'Create VIP'}
             </Button>
           </Box>
         </form>
@@ -244,6 +247,14 @@ function VIPs() {
             icon: PersonAdd,
             isFreeAction: true,
             onClick: () => setShowAddDialog(true),
+          },
+          {
+            icon: Edit,
+            onClick: (e, rowData) => {
+              reset(rowData);
+              setIsEditing(true);
+              setShowAddDialog(true);
+            },
           },
         ]}
       />
