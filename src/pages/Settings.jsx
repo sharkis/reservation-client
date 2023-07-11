@@ -4,14 +4,15 @@ import React from 'react';
 import { Authenticator } from '@aws-amplify/ui-react';
 // eslint-disable-next-line import/no-unresolved
 import '@aws-amplify/ui-react/styles.css';
-import { Areas, Header } from '../components';
+import { Areas, Header, Tags } from '../components';
 
 function Settings() {
   return (
     <Authenticator>
       <Header />
-      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', padding: 10 }}>
         <Areas />
+        <Tags />
         <Button sx={{ flex: '0 1 auto' }}>Save Settings</Button>
 
       </Box>
