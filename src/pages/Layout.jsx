@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 import { RotateLeft, RotateRight } from '@mui/icons-material';
 import {
-  Layer, Stage, Rect, Shape, Text,
+  Layer, Stage, Rect, Shape, Text, Group,
 } from 'react-konva';
 import axios from 'axios';
 import { v4 } from 'uuid';
@@ -14,7 +14,7 @@ import { Authenticator } from '@aws-amplify/ui-react';
 import Draggable from 'react-draggable';
 // eslint-disable-next-line import/no-unresolved
 import '@aws-amplify/ui-react/styles.css';
-import Header from '../components';
+import { Header } from '../components';
 
 const API_URL = `${process.env.REACT_APP_API_URL}/tables`;
 
@@ -177,8 +177,10 @@ function Layout() {
       >
         <DialogTitle id="draggable-dialog-title">Edit Table</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column' }}>
-          <IconButton onClick={() => rotateTable(false)}><RotateLeft /></IconButton>
-          <IconButton onClick={() => rotateTable(true)}><RotateRight /></IconButton>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <IconButton onClick={() => rotateTable(false)}><RotateLeft /></IconButton>
+            <IconButton onClick={() => rotateTable(true)}><RotateRight /></IconButton>
+          </div>
           <TextField
             placeholder="capacity"
             value={table.capacity}
@@ -214,7 +216,15 @@ function Layout() {
             fill="#ccc"
           />
           {tables.map((t) => (
-            <>
+            <Group
+              draggable
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              onClick={() => {
+                setShowTableDialog(true);
+                dispatch({ type: 'setTable', payload: t });
+              }}
+            >
               <Rect
                 key={t.id}
                 id={t.id}
@@ -224,16 +234,9 @@ function Layout() {
                 width={100}
                 height={50}
                 fill="#000"
-                draggable
-                onDragStart={handleDragStart}
-                onDragEnd={handleDragEnd}
-                onClick={() => {
-                  setShowTableDialog(true);
-                  dispatch({ type: 'setTable', payload: t });
-                }}
               />
-              <Text text={t.name} x={t.x} y={t.y} fill="#fff" />
-            </>
+              <Text text={t.name} x={t.x} y={t.y} fill="#fff" width={100} height={50} align="center" verticalAlign="middle" rotation={t.rotation} />
+            </Group>
           ))}
         </Layer>
       </Stage>

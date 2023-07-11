@@ -12,7 +12,7 @@ import axios from 'axios';
 import { Authenticator } from '@aws-amplify/ui-react';
 // eslint-disable-next-line import/no-unresolved
 import '@aws-amplify/ui-react/styles.css';
-import Header from '../components';
+import { Header } from '../components';
 
 const API_URL = `${process.env.REACT_APP_API_URL}/admins`;
 const SINGLE_URL = `${process.env.REACT_APP_API_URL}/admin`;
