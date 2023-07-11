@@ -48,6 +48,7 @@ function Tags() {
       if (res.data.status === 'OK') {
         setIsEditing(false);
         setShowAddDialog(false);
+        fetchTags();
       }
     });
   };

@@ -43,6 +43,7 @@ function Areas() {
         if (res.data.status === 'OK') {
           setIsEditing(false);
           setShowAddDialog(false);
+          fetchAreas();
         }
       });
   };
