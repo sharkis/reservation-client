@@ -9,7 +9,7 @@ import {
 import axios from 'axios';
 import { Controller, useForm } from 'react-hook-form';
 import MaterialTable from '@material-table/core';
-import { Add, Edit } from '@mui/icons-material';
+import { Add, Delete, Edit } from '@mui/icons-material';
 import { Box } from '@mui/system';
 import { TwitterPicker } from 'react-color';
 
@@ -131,6 +131,16 @@ function Tags() {
                 reset(rowData);
                 setIsEditing(true);
                 setShowAddDialog(true);
+              },
+            },
+            {
+              icon: Delete,
+              onClick: (e, rowData) => {
+                axios({
+                  method: 'delete',
+                  url: SINGLE_URL,
+                  data: rowData,
+                }).then(() => fetchTags());
               },
             },
           ]}

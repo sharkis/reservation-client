@@ -35,7 +35,7 @@ function Office() {
   };
 
   const columns = [
-    { title: 'Date/Time', field: 'timestamp', render: (rowData) => dayjs.unix(rowData.timestamp).format('h:mm A') },
+    { title: 'Date/Time', field: 'timestamp', render: (rowData) => dayjs.unix(rowData.timestamp).format('M/D h:mm A Z') },
     { title: 'Customer', field: 'customer.name' },
     { title: 'Email', field: 'customer.email' },
     { title: 'Phone', field: 'customer.phone' },

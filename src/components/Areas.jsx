@@ -5,7 +5,7 @@ import {
 import axios from 'axios';
 import { Controller, useForm } from 'react-hook-form';
 import MaterialTable from '@material-table/core';
-import { Add, Edit } from '@mui/icons-material';
+import { Add, Delete, Edit } from '@mui/icons-material';
 import { Box } from '@mui/system';
 
 const API_URL = `${process.env.REACT_APP_API_URL}/areas`;
@@ -41,6 +41,7 @@ function Areas() {
     })
       .then((res) => {
         if (res.data.status === 'OK') {
+          reset({ name: '' });
           setIsEditing(false);
           setShowAddDialog(false);
           fetchAreas();
@@ -65,22 +66,27 @@ function Areas() {
       <Dialog open={showAddDialog} onClose={() => setShowAddDialog(false)}>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column' }}>
           <form onSubmit={handleSubmit(createArea)}>
-            <Controller
-              name="name"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  name={field.name}
-                  value={field.value}
-                  onChange={field.onChange}
-                  onBlur={field.onBlur}
-                  placeholder="Name"
-                />
-              )}
-            />
-            <Button variant="contained" type="submit">
-              {isEditing ? 'Edit Area' : 'Create Area'}
-            </Button>
+            <Box
+              p={5}
+              sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}
+            >
+              <Controller
+                name="name"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    name={field.name}
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    placeholder="Name"
+                  />
+                )}
+              />
+              <Button variant="contained" type="submit">
+                {isEditing ? 'Edit Area' : 'Create Area'}
+              </Button>
+            </Box>
           </form>
 
         </DialogContent>
@@ -106,6 +112,16 @@ function Areas() {
                 reset(rowData);
                 setIsEditing(true);
                 setShowAddDialog(true);
+              },
+            },
+            {
+              icon: Delete,
+              onClick: (e, rowData) => {
+                axios({
+                  method: 'delete',
+                  url: SINGLE_URL,
+                  data: rowData,
+                }).then(() => fetchAreas());
               },
             },
           ]}

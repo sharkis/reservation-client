@@ -1,4 +1,3 @@
-import { Button } from '@mui/material';
 import { Box } from '@mui/system';
 import React from 'react';
 import { Authenticator } from '@aws-amplify/ui-react';
@@ -13,8 +12,6 @@ function Settings() {
       <Box sx={{ display: 'flex', flexDirection: 'column', padding: 10 }}>
         <Areas />
         <Tags />
-        <Button sx={{ flex: '0 1 auto' }}>Save Settings</Button>
-
       </Box>
 
     </Authenticator>
