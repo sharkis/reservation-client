@@ -5,40 +5,47 @@ import {
   Dialog,
   DialogContent,
   TextField,
+  Switch,
 } from '@mui/material';
 import axios from 'axios';
 import { Controller, useForm } from 'react-hook-form';
 import MaterialTable from '@material-table/core';
+import { Authenticator } from '@aws-amplify/ui-react';
 import { Add, Delete, Edit } from '@mui/icons-material';
-import { Box } from '@mui/system';
-import { TwitterPicker } from 'react-color';
+// eslint-disable-next-line import/no-unresolved
+import '@aws-amplify/ui-react/styles.css';
 
-const API_URL = `${process.env.REACT_APP_API_URL}/tags`;
-const SINGLE_URL = `${process.env.REACT_APP_API_URL}/tag`;
+import { Header } from '../components';
 
-function Tags() {
+const API_URL = `${process.env.REACT_APP_API_URL}/events`;
+const SINGLE_URL = `${process.env.REACT_APP_API_URL}/event`;
+
+function Events() {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [tags, setTags] = useState([]);
+  const [events, setEvents] = useState([]);
   const { control, handleSubmit, reset } = useForm({
     defaultValues: {
+      uuid: '',
       name: '',
-      color: '',
+      startdate: '',
+      enddate: '',
+      allday: false,
     },
   });
 
-  const fetchTags = () => {
+  const fetchEvents = () => {
     axios
       .get(API_URL)
       .then((res) => {
-        setTags(res.data.items);
+        setEvents(res.data.items);
       })
       .catch((e) => {
         console.error(e);
       });
   };
 
-  const createTag = (data, e) => {
+  const createEvent = (data, e) => {
     e.preventDefault();
     axios({
       method: isEditing ? 'put' : 'post',
@@ -49,13 +56,13 @@ function Tags() {
         reset({ name: '', color: '' });
         setIsEditing(false);
         setShowAddDialog(false);
-        fetchTags();
+        fetchEvents();
       }
     });
   };
 
   useEffect(() => {
-    fetchTags();
+    fetchEvents();
   }, []);
 
   const columns = [
@@ -65,17 +72,49 @@ function Tags() {
       field: 'name',
     },
     {
-      title: 'Color',
-      field: 'color',
-      render: (rowData) => (<div style={{ height: '10px', width: '10px', backgroundColor: rowData.color }} />),
+      title: 'All Day?',
+      field: 'allday',
+      render: (rowData) => (rowData.allday ? 'Yes' : 'No'),
+    },
+
+  ];
+
+  const actions = [
+    {
+      icon: Add,
+      isFreeAction: true,
+      onClick: () => {
+        reset();
+        setShowAddDialog(true);
+      },
+    },
+    {
+      icon: Edit,
+      onClick: (e, rowData) => {
+        reset(rowData);
+        setIsEditing(true);
+        setShowAddDialog(true);
+      },
+    },
+    {
+      icon: Delete,
+      onClick: (e, rowData) => {
+        axios({
+          method: 'delete',
+          url: SINGLE_URL,
+          data: rowData,
+        }).then(() => fetchEvents());
+      },
     },
   ];
 
   return (
-    <>
+    <Authenticator>
+      <Header />
+      <Typography sx={{ flexGrow: 0 }}>Events</Typography>
       <Dialog open={showAddDialog} onClose={() => setShowAddDialog(false)}>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column' }}>
-          <form onSubmit={handleSubmit(createTag)}>
+          <form onSubmit={handleSubmit(createEvent)}>
             <Controller
               name="name"
               control={control}
@@ -90,65 +129,27 @@ function Tags() {
               )}
             />
             <Controller
-              name="color"
+              name="allday"
               control={control}
               render={({ field }) => (
-                <TwitterPicker
-                  color={field.value}
-                  onChangeComplete={(c) => field.onChange(c.hex)}
+                <Switch
+                  name={field.name}
+                  value={field.value}
+                  onChange={(e) => field.onChange(e.target.checked)}
+                  onBlur={field.onBlur}
+                  placeholder="All Day?"
                 />
               )}
             />
             <Button variant="contained" type="submit">
-              {isEditing ? 'Edit Tag' : 'Create Tag'}
+              {isEditing ? 'Edit Event' : 'Create Event'}
             </Button>
           </form>
         </DialogContent>
       </Dialog>
-      <Typography sx={{ flexGrow: 0 }}>Tags</Typography>
-      <Box
-        sx={{
-          border: '1px solid black',
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
-        <MaterialTable
-          title="Tags"
-          data={tags}
-          columns={columns}
-          actions={[
-            {
-              icon: Add,
-              isFreeAction: true,
-              onClick: () => {
-                reset();
-                setShowAddDialog(true);
-              },
-            },
-            {
-              icon: Edit,
-              onClick: (e, rowData) => {
-                reset(rowData);
-                setIsEditing(true);
-                setShowAddDialog(true);
-              },
-            },
-            {
-              icon: Delete,
-              onClick: (e, rowData) => {
-                axios({
-                  method: 'delete',
-                  url: SINGLE_URL,
-                  data: rowData,
-                }).then(() => fetchTags());
-              },
-            },
-          ]}
-        />
-      </Box>
-    </>
+      <MaterialTable columns={columns} data={events} actions={actions} title="Events" />
+    </Authenticator>
   );
 }
 
-export default Tags;
+export default Events;

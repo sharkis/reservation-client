@@ -5,7 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Amplify } from 'aws-amplify';
 import {
-  Admins, Booking, Host, Layout, Office, OfficeMain, Settings, VIPs,
+  Admins, Booking, Events, Host, Layout, Office, OfficeMain, Settings, VIPs,
 } from './pages';
 import awsExports from './awsExports';
 
@@ -50,6 +50,10 @@ function App() {
     {
       path: '/office/layout',
       element: <Layout />,
+    },
+    {
+      path: '/office/events',
+      element: <Events />,
     },
   ]);
 

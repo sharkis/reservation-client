@@ -15,6 +15,7 @@ function Header() {
         >
           <Button><Link to="/office/reservations">Reservations</Link></Button>
           <Button><Link to="/office/layout">Layout</Link></Button>
+          <Button><Link to="/office/events">Events</Link></Button>
           <Button><Link to="/office/settings">Settings</Link></Button>
           <Button><Link to="/office/vips">VIPs</Link></Button>
           <Button><Link to="/office/admins">Admins</Link></Button>
