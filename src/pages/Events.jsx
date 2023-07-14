@@ -72,6 +72,14 @@ function Events() {
       field: 'name',
     },
     {
+      title: 'Start Date/Time',
+      field: 'startdate',
+    },
+    {
+      title: 'End Date/Time',
+      field: 'enddate',
+    },
+    {
       title: 'All Day?',
       field: 'allday',
       render: (rowData) => (rowData.allday ? 'Yes' : 'No'),
