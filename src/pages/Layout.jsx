@@ -2,7 +2,17 @@
 import React, { useEffect, useReducer, useState } from 'react';
 
 import {
-  Button, Snackbar, Alert, Dialog, TextField, Paper, DialogContent, DialogTitle, IconButton,
+  Alert,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  MenuItem,
+  Paper,
+  Select,
+  Snackbar,
+  TextField,
 } from '@mui/material';
 import { RotateLeft, RotateRight } from '@mui/icons-material';
 import {
@@ -17,6 +27,7 @@ import '@aws-amplify/ui-react/styles.css';
 import { Header } from '../components';
 
 const API_URL = `${process.env.REACT_APP_API_URL}/tables`;
+const AREA_URL = `${process.env.REACT_APP_API_URL}/areas`;
 
 function PaperComponent(props) {
   return (
@@ -60,13 +71,16 @@ const reducer = (state, action) => {
 };
 
 function Layout() {
+  const [area, setArea] = useState('');
   const [tables, setTables] = useState([]);
+  const [areas, setAreas] = useState([]);
   const [table, dispatch] = useReducer(reducer, {});
   const [showSnack, setShowSnack] = useState(false);
   const [showTableDialog, setShowTableDialog] = useState(false);
 
   const handleDragStart = (e) => {
     const id = e.target.id();
+    console.log(id);
     setTables(
       tables.map((t) => ({
         ...t,
@@ -97,9 +111,6 @@ function Layout() {
         if (res.status === 200) {
           setShowSnack(true);
         }
-      })
-      .catch((e) => {
-        console.error(e);
       });
   };
 
@@ -111,6 +122,7 @@ function Layout() {
         y: 0,
         id: v4(),
         rotation: 0,
+        areaId: area,
       },
     ]);
   };
@@ -138,6 +150,17 @@ function Layout() {
     }
   };
 
+  const fetchAreas = () => {
+    axios
+      .get(AREA_URL)
+      .then((res) => {
+        setAreas(res.data.items);
+        if (res.data.items.length > 1) {
+          setArea(res.data.items[0].uuid);
+        }
+      });
+  };
+
   useEffect(() => {
     if (table !== {}) {
       const newTables = [...tables];
@@ -154,16 +177,20 @@ function Layout() {
   }, [table]);
 
   useEffect(() => {
-    // load tables from server
-    axios
-      .get(API_URL)
-      .then((res) => {
-        setTables(res.data.items);
-      })
-      .catch((e) => {
-        console.error(e);
-      });
+    // load available areas from server
+    fetchAreas();
   }, []);
+
+  useEffect(() => {
+    // load tables from server when area selected
+    if (area) {
+      axios
+        .get(API_URL, { params: { areaId: area } })
+        .then((res) => {
+          setTables(res.data.items);
+        });
+    }
+  }, [area]);
 
   return (
     <Authenticator>
@@ -197,6 +224,9 @@ function Layout() {
         </DialogContent>
       </Dialog>
       <Header />
+      <Select value={area} onChange={(e) => { setArea(e.target.value); }}>
+        {areas.map((a) => (<MenuItem value={a.uuid}>{a.name}</MenuItem>))}
+      </Select>
       <Button onClick={addTable}>Add Table</Button>
       <Stage width={1280} height={720}>
         <Layer>
@@ -224,18 +254,19 @@ function Layout() {
                 setShowTableDialog(true);
                 dispatch({ type: 'setTable', payload: t });
               }}
+              id={t.id}
+              x={t.x}
+              y={t.y}
             >
               <Rect
                 key={t.id}
                 id={t.id}
-                x={t.x}
-                y={t.y}
                 rotation={t.rotation}
                 width={100}
                 height={50}
                 fill="#000"
               />
-              <Text text={t.name} x={t.x} y={t.y} fill="#fff" width={100} height={50} align="center" verticalAlign="middle" rotation={t.rotation} />
+              <Text text={t.name} fill="#fff" width={100} height={50} align="center" verticalAlign="middle" rotation={t.rotation} />
             </Group>
           ))}
         </Layer>
