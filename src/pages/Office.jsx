@@ -22,7 +22,7 @@ function Office() {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [reservations, setReservations] = useState([]);
   const [tags, setTags] = useState([]);
-  const [qdate, setQDate] = useState(new Date().getTime() / 1000);
+  const [qdate, setQDate] = useState(new Date().getTime());
 
   useEffect(() => {
     axios({
