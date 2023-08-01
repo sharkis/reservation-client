@@ -66,11 +66,13 @@ function Booking() {
 
   useEffect(() => {
     if (!timeVals.some((t) => t === null)) {
+      const restimestamp = timeVals[2];
+      restimestamp.set('hours', timeVals[3].get('hours')).set('minutes', timeVals[3].get('minutes')).set('seconds', 0);
       setStatus('pending');
       axios.post(API_URL, {
         size: timeVals[0],
         area: timeVals[1],
-        timestamp: Math.floor(timeVals[2].unix() / 86400) * 86400 + (timeVals[3].unix() % 86400),
+        timestamp: restimestamp.valueOf(),
       }).then((res) => {
         if (res.data.available === true) {
           setStatus('success');
@@ -84,9 +86,14 @@ function Booking() {
 
   const createReservation = (data, e) => {
     e.preventDefault();
+    const restimestamp = timeVals[2]
+      .hour(timeVals[3].get('hour'))
+      .minute(timeVals[3].get('minute'))
+      .second(0);
+
     axios.post(BOOK_URL, {
       ...data,
-      datetime: Math.floor(timeVals[2].unix() / 86400) * 86400 + (timeVals[3].unix() % 86400),
+      datetime: restimestamp.valueOf(),
     }).then((res) => {
       if (res.data.status === 'OK') {
         setShowSnack(true);

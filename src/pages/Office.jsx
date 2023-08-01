@@ -73,14 +73,14 @@ function Office() {
   };
 
   const columns = [
-    { title: 'Date/Time', field: 'timestamp', render: (rowData) => dayjs.unix(rowData.timestamp).format('M/D h:mm A Z') },
+    { title: 'Date/Time', field: 'timestamp', render: (rowData) => dayjs(rowData.timestamp).format('M/D h:mm A Z') },
     { title: 'Customer', field: 'customer.name' },
     { title: 'Email', field: 'customer.email' },
     { title: 'Phone', field: 'customer.phone' },
     { title: 'Area', field: 'area', render: ({ area }) => areas[area] },
     { title: 'Size', field: 'size' },
     { title: 'Occasion', field: 'occasion' },
-    { title: 'Tags', field: 'tags', render: () => 'tag' },
+    { title: 'Tags', field: 'tags', render: () => 'tags here' },
   ];
 
   const currentReservations = reservations
@@ -91,7 +91,7 @@ function Office() {
   return (
     <Authenticator>
       <Header />
-      <Dialog open={showAddDialog}>
+      <Dialog open={showAddDialog} onClose={() => { setShowAddDialog(false); }}>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column' }}>
           <Box p={5}>
             <form onSubmit={handleSubmit(updateEvent)}>
@@ -109,7 +109,7 @@ function Office() {
                 )}
               />
               <Controller
-                name="name"
+                name="tags"
                 control={control}
                 render={({ field }) => (
                   <Autocomplete
@@ -133,7 +133,7 @@ function Office() {
 
       </Dialog>
       <Typography variant="h3">Reservations</Typography>
-      <DatePicker onChange={(v) => setQDate(v.unix())} defaultValue={dayjs()} />
+      <DatePicker onChange={(v) => setQDate(v.valueOf())} defaultValue={dayjs()} />
       <MaterialTable
         data={currentReservations}
         columns={columns}
