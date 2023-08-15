@@ -95,19 +95,6 @@ function Office() {
           <Box p={5}>
             <form onSubmit={handleSubmit(updateEvent)}>
               <Controller
-                name="name"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    name={field.name}
-                    value={field.value}
-                    onChange={field.onChange}
-                    onBlur={field.onBlur}
-                    placeholder="Name"
-                  />
-                )}
-              />
-              <Controller
                 name="tags"
                 control={control}
                 render={({ field }) => (
@@ -123,6 +110,84 @@ function Office() {
                   />
                 )}
               />
+              <Controller
+                name="customer.name"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    name={field.name}
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    placeholder="Name"
+                  />
+                )}
+              />
+              <Controller
+                name="customer.email"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    name={field.name}
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    placeholder="Email"
+                  />
+                )}
+              />
+              <Controller
+                name="area"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    name={field.name}
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    placeholder="Area"
+                  />
+                )}
+              />
+              <Controller
+                name="size"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    name={field.name}
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    placeholder="Size"
+                  />
+                )}
+              />
+              <Controller
+                name="occasion"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    name={field.name}
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    placeholder="Occasion"
+                  />
+                )}
+              />
+              <Controller
+                name="customer.phone"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    name={field.name}
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    placeholder="Phone"
+                  />
+                )}
+              />
               <Button variant="contained" type="submit">Update Reservation</Button>
             </form>
 
@@ -135,8 +200,10 @@ function Office() {
       <MaterialTable
         data={currentReservations}
         columns={columns}
-        actions={[{ icon: Refresh, isFreeAction: true, onClick: fetchReservations },
-          { icon: ContactPage }, { icon: Edit, onClick: () => { setShowAddDialog(true); } }]}
+        actions={[
+          { icon: Refresh, isFreeAction: true, onClick: fetchReservations },
+          { icon: ContactPage },
+          { icon: Edit, onClick: (_e, rowData) => { reset(rowData); setShowAddDialog(true); } }]}
       />
     </Authenticator>
   );
